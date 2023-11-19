@@ -32,7 +32,7 @@ public class SignupUseCaseFactory {
 
         try {
             SignupController signupController = createUserSignupUseCase(viewManagerModel, signupViewModel, loginViewModel, userDataAccessObject);
-            ClearController clearController = createClearUserUseCase(userDataAccessObject2);
+            ClearController clearController = createClearUserUseCase(userDataAccessObject2, signupViewModel, viewManagerModel);
             return new SignupView(signupController, signupViewModel, clearController);
         } catch (IOException e) {
             JOptionPane.showMessageDialog(null, "Could not open user data file.");
@@ -54,9 +54,9 @@ public class SignupUseCaseFactory {
         return new SignupController(userSignupInteractor);
     }
 
-    private static ClearController createClearUserUseCase(ClearUserDataAccessInterface userDataAccessObject) {
+    private static ClearController createClearUserUseCase(ClearUserDataAccessInterface userDataAccessObject, SignupViewModel signupViewModel, ViewManagerModel viewManagerModel) {
 
-        ClearOutputBoundary clearOutputBoundary = new ClearPresenter();
+        ClearOutputBoundary clearOutputBoundary = new ClearPresenter(signupViewModel, viewManagerModel);
 
         ClearInputBoundary clearUserInteractor = new ClearInteractor(userDataAccessObject, clearOutputBoundary);
 

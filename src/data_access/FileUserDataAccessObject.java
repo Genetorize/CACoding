@@ -8,9 +8,7 @@ import use_case.signup.SignupUserDataAccessInterface;
 
 import java.io.*;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 public class FileUserDataAccessObject implements SignupUserDataAccessInterface, LoginUserDataAccessInterface,
         ClearUserDataAccessInterface {
@@ -98,8 +96,51 @@ public class FileUserDataAccessObject implements SignupUserDataAccessInterface, 
         return accounts.containsKey(identifier);
     }
 
+    public ArrayList<String> recordAllUser() {
+        ArrayList<String> list = new ArrayList<>();
+        for (User user : accounts.values()) {
+            list.add(user.getName());
+        }
+        return list;
+    }
+
     @Override
     public void deleteAllUser() {
         accounts.clear();
+
+        String inputFilePath = "./users.csv";
+        String outputFilePath = "./users.csv";
+
+        try {
+            List<String> lines = readAllLines(inputFilePath);
+            lines = deleteRowsAfterFirstRow(lines);
+            writeLines(outputFilePath, lines);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static List<String> deleteRowsAfterFirstRow(List<String> lines) {
+        return lines.subList(0, 1);
+    }
+
+    private static List<String> readAllLines(String filepath) throws IOException {
+        List<String> lines = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(filepath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                lines.add(line);
+            }
+        }
+        return lines;
+    }
+
+    private static void writeLines(String filePath, List<String> lines) throws IOException {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))){
+            for (String line : lines) {
+                writer.write(line);
+                writer.newLine();
+            }
+        }
     }
 }
